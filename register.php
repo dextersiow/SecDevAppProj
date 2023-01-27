@@ -59,13 +59,17 @@
 require_once "connection.php";
 $username = $_POST["username"]; 
 $password = $_POST["password"]; 
+$cpassword = $_POST["cpassword"]; 
 
-
+if ($password == $cpassword) {
 $sql = "INSERT INTO users (username, password) 
 VALUES ('$username', '$password')";
-
+}
+else {
+	echo "passwords do not match <br>";
+}
 if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+    echo "New record created successfully <br>";
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
