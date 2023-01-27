@@ -1,48 +1,4 @@
-<?php
-include 'connection.php';
-include 'header.php';
-
-    if($_SERVER["REQUEST_METHOD"] == "POST"){
-        if(isset($_POST['submit']) && $_POST['submit'] == "Register"){
-            $username = $password = $confirm_password = "";
-            $username_err = $password_err = $confirm_password_err = "";
-
-            if (!empty($_POST['username'])) {
-                $sql = "SELECT id FROM user WHERE username = ?";
-                if ($stmt = $conn->prepare($sql)) {
-                    $stmt->bind_param("s", $param_username);
-                    $param_username = $_POST['username'];
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result->fetch_assoc()) {
-                        $username_Err = 'Username has been registered.';
-                    } else {        
-                        $input_username = $_POST['username'];
-                        $input_password = $_POST['password']
-                        $iv = random_bytes(16);
-                        $iv_hex = bin2hex($iv);
-                        $escaped_username = $conn->real_escape_string($_POST['username']);
-                        $hashed_pw = hash_data($input_password);
-                            
-                            $sql = "INSERT INTO `user`(`username`, `password`, `iv`) "
-                                    . "VALUES "
-                                    . "('$escaped_username','$hashed_pw','$iv_hex','$encrypted_fullname','$encrypted_address','$encrypted_dob','$encrypted_phoneNo','$encrypted_img')";
-            
-                            if ($conn->query($sql) === TRUE) {
-                                header("location: index.php");
-                                exit;
-                            } else {
-                                die('Error creating user: ' . $conn->error);
-                            }
-                        
-                    }
-                }
-            }
-        }
-        
-    }
-
-?>
+<!DOCTYPE html> 
 
 <html>
     <head>
@@ -99,3 +55,20 @@ include 'header.php';
         <br><br><br>
     </body>
 </html>
+<?php 
+require_once "connection.php";
+$username = $_POST["username"]; 
+$password = $_POST["password"]; 
+
+
+$sql = "INSERT INTO users (username, password) 
+VALUES ('$username', '$password')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "New record created successfully";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+$conn->close();
+?>
