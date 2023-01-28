@@ -61,13 +61,26 @@ $username = $_POST["username"];
 $password = $_POST["password"]; 
 $cpassword = $_POST["cpassword"]; 
 
-if ($password == $cpassword) {
-$sql = "INSERT INTO users (username, password) 
-VALUES ('$username', '$password')";
-}
-else {
-	echo "passwords do not match <br>";
-}
+ if (strlen($password) < 10) {
+      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    } else if (!preg_match("#[a-z]+#", $password)) {
+      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    } else if (!preg_match("#[A-Z]+#", $password)) {
+     echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    } else if (!preg_match("#[0-9]+#", $password)) {
+      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    } else if (!preg_match("[@_! #$%^&*()<>?/|}{~:]", $password)) {
+      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    } else if ($password != $cpassword) {
+      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+    }	else {
+		$sql = "INSERT INTO users (username, password) 
+		VALUES ('$username', '$password')";
+      echo "Registration successful!<br>";
+    }
+	
+	
+	
 if ($conn->query($sql) === TRUE) {
     echo "New record created successfully <br>";
 } else {
