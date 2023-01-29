@@ -68,7 +68,12 @@ for ($i = 0; $i < 32; $i++) {
     $salt .= $characters[rand(0, $charactersLength - 1)];
 }
 
- if (strlen($password) < 10) {
+$usernameExists = "SELECT * FROM users WHERE username='$username'";
+$result = $conn->query($usernameExists);
+
+	if ($result->num_rows > 0) {
+	echo "Username already exists<br>";
+	} else if (strlen($password) < 10) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     } else if (!preg_match("#[a-z]+#", $password)) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
