@@ -64,7 +64,7 @@ $cpassword = $_POST["cpassword"];
 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 $charactersLength = strlen($characters);
 $salt = '';
-for ($i = 0; $i < 10; $i++) {
+for ($i = 0; $i < 32; $i++) {
     $salt .= $characters[rand(0, $charactersLength - 1)];
 }
 
