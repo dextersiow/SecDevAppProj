@@ -69,7 +69,7 @@ $cpassword = $_POST["cpassword"];
      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     } else if (!preg_match("#[0-9]+#", $password)) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if (!preg_match("[@_! #$%^&*()<>?/|}{~:]", $password)) {
+    } else if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $password)) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     } else if ($password != $cpassword) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
@@ -78,7 +78,6 @@ $cpassword = $_POST["cpassword"];
 		VALUES ('$username', '$password')";
       echo "Registration successful!<br>";
     }
-	
 	
 	
 if ($conn->query($sql) === TRUE) {
