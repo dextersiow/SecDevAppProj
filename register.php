@@ -58,7 +58,7 @@
 <?php 
 require_once "connection.php";
 $username = $_POST["username"]; 
-$password = $_POST["password"]; 
+$password = $_POST["password"];
 $cpassword = $_POST["cpassword"]; 
 
 $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -81,8 +81,10 @@ for ($i = 0; $i < 10; $i++) {
     } else if ($password != $cpassword) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     }	else {
+		//$hashSalt = hash("sha256", $salt);
+		$saltedHashedPassword = hash("sha256", $salt . $password);
 		$sql = "INSERT INTO users (username, password, salt) 
-		VALUES ('$username', '$password', '$salt')";
+		VALUES ('$username', '$saltedHashedPassword', '$salt')";
       echo "Registration successful!<br>";
     }
 	
