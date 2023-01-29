@@ -61,6 +61,13 @@ $username = $_POST["username"];
 $password = $_POST["password"]; 
 $cpassword = $_POST["cpassword"]; 
 
+$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+$charactersLength = strlen($characters);
+$salt = '';
+for ($i = 0; $i < 10; $i++) {
+    $salt .= $characters[rand(0, $charactersLength - 1)];
+}
+
  if (strlen($password) < 10) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     } else if (!preg_match("#[a-z]+#", $password)) {
@@ -74,8 +81,8 @@ $cpassword = $_POST["cpassword"];
     } else if ($password != $cpassword) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     }	else {
-		$sql = "INSERT INTO users (username, password) 
-		VALUES ('$username', '$password')";
+		$sql = "INSERT INTO users (username, password, salt) 
+		VALUES ('$username', '$password', '$salt')";
       echo "Registration successful!<br>";
     }
 	
