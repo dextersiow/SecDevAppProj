@@ -81,10 +81,10 @@ for ($i = 0; $i < 10; $i++) {
     } else if ($password != $cpassword) {
       echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
     }	else {
-		//$hashSalt = hash("sha256", $salt);
-		$saltedHashedPassword = hash("sha256", $salt . $password);
+		$hashSalt = hash("sha256", $salt);
+		$saltedHashedPassword = hash("sha256", $hashSalt . $password);
 		$sql = "INSERT INTO users (username, password, salt) 
-		VALUES ('$username', '$saltedHashedPassword', '$salt')";
+		VALUES ('$username', '$saltedHashedPassword', '$hashSalt')";
       echo "Registration successful!<br>";
     }
 	
