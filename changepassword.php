@@ -7,26 +7,38 @@ if (isset($_POST['username']) && isset($_POST['currentPassword']) && isset($_POS
   $currentPassword = $_POST['currentPassword'];
   $newPassword = $_POST['newPassword'];
 
-  $query = "SELECT * FROM users WHERE username='$username'";
-  $result = $conn->query($query);
-
-  if ($result->num_rows == 0) {
-    echo "Username and/or password is incorrect.<br>";
+  if (strlen($newPassword) < 10) {
+    echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+  } else if (!preg_match("#[a-z]+#", $newPassword)) {
+    echo "Password must include at least 1 lowercase letter.<br>";
+  } else if (!preg_match("#[A-Z]+#", $newPassword)) {
+    echo "Password must include at least 1 uppercase letter.<br>";
+  } else if (!preg_match("#[0-9]+#", $newPassword)) {
+    echo "Password must include at least 1 number.<br>";
+  } else if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $newPassword)) {
+    echo "Password must include at least 1 special character.<br>";
   } else {
-    $user = $result->fetch_assoc();
-    $hashSalt = $user['salt'];
-    $saltedHashedPassword = hash("sha256", $hashSalt . $currentPassword);
+    $query = "SELECT * FROM users WHERE username='$username'";
+    $result = $conn->query($query);
 
-    if ($saltedHashedPassword == $user['password']) {
-      $saltedHashedNewPassword = hash("sha256", $hashSalt . $newPassword);
-      $sql = "UPDATE users SET password='$saltedHashedNewPassword' WHERE username='$username'";
-      if ($conn->query($sql) === TRUE) {
-        echo "Password updated successfully.<br>";
-      } else {
-        echo "Error updating password: " . $conn->error . "<br>";
-      }
+    if ($result->num_rows == 0) {
+      echo "Username and/or password is incorrect.<br>";
     } else {
-      echo "Incorrect password.<br>";
+      $user = $result->fetch_assoc();
+      $hashSalt = $user['salt'];
+      $saltedHashedPassword = hash("sha256", $hashSalt . $currentPassword);
+
+      if ($saltedHashedPassword == $user['password']) {
+        $saltedHashedNewPassword = hash("sha256", $hashSalt . $newPassword);
+        $sql = "UPDATE users SET password='$saltedHashedNewPassword' WHERE username='$username'";
+        if ($conn->query($sql) === TRUE) {
+          echo "Password updated successfully.<br>";
+        } else {
+          echo "Error updating password: " . $conn->error . "<br>";
+        }
+      } else {
+        echo "Incorrect password.<br>";
+      }
     }
   }
 } else {
@@ -34,6 +46,7 @@ if (isset($_POST['username']) && isset($_POST['currentPassword']) && isset($_POS
 }
 
 $conn->close();
+
 ?>
 
 
