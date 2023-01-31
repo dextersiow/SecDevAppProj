@@ -2,11 +2,8 @@
     require_once 'header.php';
     $username = $password = "";
     $err = "";
-
     if($_SERVER["REQUEST_METHOD"] == "POST"){
-        if(empty($err)){
-            
-        }
+        
 
     }
 ?>
@@ -41,7 +38,7 @@
             </label>
         </div>
 
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <input class="btn btn-lg btn-primary btn-block" name="submit" type="submit">
 
         <div class="mt-1">
             <div>Don't have an account? <a id="register" href="registerMember.php">Click Here</a></div>      
