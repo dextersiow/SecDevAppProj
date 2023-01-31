@@ -1,11 +1,41 @@
 <?php 
-    require_once 'header.php';
+    /*require_once 'header.php';
     $username = $password = "";
     $err = "";
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         
 
+    }*/
+
+require_once "connection.php";
+
+if (isset($_POST['username']) && isset($_POST['password'])) {
+  $username = $_POST['username'];
+  $password = $_POST['password'];
+
+  $query = "SELECT * FROM users WHERE username='$username'";
+  $result = $conn->query($query);
+
+  if ($result->num_rows == 0) {
+    echo "Username and/or password is incorrect.<br>";
+  } else {
+    $user = $result->fetch_assoc();
+    $hashSalt = $user['salt'];
+    $saltedHashedPassword = hash("sha256", $hashSalt . $password);
+
+    if ($saltedHashedPassword == $user['password']) {
+      echo "Login successful!<br>";
+	  echo "Registration successful!<br>";
+	  header("Location: authpage1.php");
+    } else {
+      echo "Incorrect password.<br>";
     }
+  }
+} else {
+  echo "Please enter a username and password.<br>";
+}
+
+$conn->close();
 ?>
 
 <html lang="en">
@@ -41,7 +71,7 @@
         <input class="btn btn-lg btn-primary btn-block" name="submit" type="submit">
 
         <div class="mt-1">
-            <div>Don't have an account? <a id="register" href="registerMember.php">Click Here</a></div>      
+            <div>Don't have an account? <a id="register" href="register.php">Click Here</a></div>      
         </div>
 
     </form>

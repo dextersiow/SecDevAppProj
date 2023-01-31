@@ -90,7 +90,10 @@ $result = $conn->query($usernameExists);
 		$saltedHashedPassword = hash("sha256", $hashSalt . $password);
 		$sql = "INSERT INTO users (username, password, salt) 
 		VALUES ('$username', '$saltedHashedPassword', '$hashSalt')";
-      echo "Registration successful!<br>";
+		$result = $conn->query($sql);
+		echo "Registration successful!<br>";
+		header("Location: login.php");
+	    exit();
     }
 	
 	
