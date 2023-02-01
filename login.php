@@ -1,20 +1,15 @@
 <?php 
-    /*require_once 'header.php';
-    $username = $password = "";
-    $err = "";
-    if($_SERVER["REQUEST_METHOD"] == "POST"){
-        
-
-    }*/
-
 require_once "connection.php";
 
 if (isset($_POST['username']) && isset($_POST['password'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
 
-  $query = "SELECT * FROM users WHERE username='$username'";
-  $result = $conn->query($query);
+  $query = "SELECT * FROM users WHERE username=?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $result = $stmt->get_result();
 
   if ($result->num_rows == 0) {
     echo "Username and/or password is incorrect.<br>";
@@ -36,7 +31,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 }
 
 $conn->close();
-?>
+?> 
+
 
 <html lang="en">
 <head>
@@ -57,7 +53,7 @@ $conn->close();
         <?php //if(isset($username_err))echo $Username_err ?>
 
         <label for="inputUsername" class="sr-only">Username</label>
-        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" maxlength="12" required autofocus>
+        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
 
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
@@ -68,7 +64,7 @@ $conn->close();
             </label>
         </div>
 
-        <input class="btn btn-lg btn-primary btn-block" name="submit" type="submit">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 
         <div class="mt-1">
             <div>Don't have an account? <a id="register" href="register.php">Click Here</a></div>      
