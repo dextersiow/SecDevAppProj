@@ -25,10 +25,9 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
     if ($saltedHashedPassword == $user['password']) {
       echo "Login successful!<br>";
-	  echo "Registration successful!<br>";
 	  header("Location: authpage1.php");
     } else {
-      echo "Incorrect password.<br>";
+      echo "The username ". $username . "and password could not be authenticated at the moment. <br>";
     }
   }
 } else {
