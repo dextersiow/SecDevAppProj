@@ -18,8 +18,11 @@ if (isset($_POST['username']) && isset($_POST['currentPassword']) && isset($_POS
   } else if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $newPassword)) {
     echo "Password must include at least 1 special character.<br>";
   } else {
-    $query = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($query);
+   $query = "SELECT * FROM users WHERE username=?";
+	$stmt = $conn->prepare($query);
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$result = $stmt->get_result();
 
     if ($result->num_rows == 0) {
       echo "Username and/or password is incorrect.<br>";
@@ -30,8 +33,10 @@ if (isset($_POST['username']) && isset($_POST['currentPassword']) && isset($_POS
 
       if ($saltedHashedPassword == $user['password']) {
         $saltedHashedNewPassword = hash("sha256", $hashSalt . $newPassword);
-        $sql = "UPDATE users SET password='$saltedHashedNewPassword' WHERE username='$username'";
-        if ($conn->query($sql) === TRUE) {
+        $sql = "UPDATE users SET password=? WHERE username=?";
+		$stmt = $conn->prepare($sql);
+		$stmt->bind_param("ss", $saltedHashedNewPassword, $username);
+        if ($stmt->execute() === TRUE) {
           echo "Password updated successfully.<br>";
         } else {
           echo "Error updating password: " . $conn->error . "<br>";
@@ -68,14 +73,14 @@ $conn->close();
 
         <?php //if(isset($username_err))echo $Username_err ?>
 
-        <label for="inputUsername" class="sr-only">Username</label>
-        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" maxlength="12" required autofocus>
+        <label for="inputUsername" class="sr-only">Username</label><br>
+        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus><br>
 
-        <label for="inputPassword" class="sr-only">Old Password</label>
-        <input type="password" name="currentPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+        <label for="inputPassword" class="sr-only">Old Password</label><br>
+        <input type="password" name="currentPassword" id="inputPassword" class="form-control" placeholder="Password" required><br>
 		
-		 <label for="inputPassword" class="sr-only">New Password</label>
-        <input type="password" name="newPassword" id="inputPassword" class="form-control" placeholder="Password" required>
+		 <label for="inputPassword" class="sr-only">New Password</label><br>
+        <input type="password" name="newPassword" id="inputPassword" class="form-control" placeholder="Password" required><br>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">change password</button>
 
