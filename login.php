@@ -19,9 +19,13 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $saltedHashedPassword = hash("sha256", $hashSalt . $password);
 
     if ($saltedHashedPassword == $user['password']) {
+	session_start();
+	$username = $_SESSION['username'];
+	$key = "YourEncryptionKey";
+	$encryptedUsername = base64_encode(openssl_encrypt($username, 'AES-128-ECB', $key));
+	$_SESSION['encrypted_username'] = $encryptedUsername;
       echo "Login successful!<br>";
-	  echo "Registration successful!<br>";
-	  header("Location: authpage1.php");
+      header("Location: authpage1.php");
     } else {
       echo "Incorrect password.<br>";
     }
@@ -31,7 +35,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 }
 
 $conn->close();
-?> 
+?>
 
 
 <html lang="en">
