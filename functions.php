@@ -1,7 +1,11 @@
 <?php
  require_once "connection.php";
-function filter(){
-    //XSS filter
+function filter($input){
+  $input = str_replace("<", "&lt;", $input);
+  $input = str_replace(">", "&gt;", $input);
+  $input = str_replace("'", "&apos;", $input);
+  $input = str_replace('"', "&quot;", $input);
+  return $input;
 }
 
 function authenticate($username, $password){
@@ -21,7 +25,7 @@ function authenticate($username, $password){
         }
       } 
 }
-function authenticateSession($session){
+function checkActiveSession($session){
     //check authenticated active session 
 }
 
@@ -30,7 +34,16 @@ function logout(){
 }
 
 function validatePassword(){
-    //validate password on creation
+  $uppercase = preg_match('@[A-Z]@', $password);
+  $lowercase = preg_match('@[a-z]@', $password);
+  $number    = preg_match('@[0-9]@', $password);
+  $specialChars = preg_match('@[^\w]@', $password);
+
+  if (!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 8) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 

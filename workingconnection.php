@@ -24,6 +24,7 @@ id int NOT NULL AUTO_INCREMENT,
 username varchar(256) NOT NULL,
 password varchar(256) NOT NULL,
 salt varchar(256) NOT NULL,
+role varchar(15) NOT NULL,
 PRIMARY KEY (id));';
 
 if (!$conn->query($sql) === TRUE) {
