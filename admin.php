@@ -6,7 +6,7 @@
         <h2>Event Log</h2>
         
         <table class="table" style="width:80%">
-            
+        
         </table>
         </div>
         

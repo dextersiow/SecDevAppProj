@@ -1,5 +1,5 @@
 <?php
- require_once "connection.php";
+require_once "connection.php";
 function filter($input){
   $input = str_replace("<", "&lt;", $input);
   $input = str_replace(">", "&gt;", $input);
@@ -9,24 +9,37 @@ function filter($input){
 }
 
 function authenticate($username, $password){
-    $query = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($query);
-    if ($result->num_rows == 0) {
-        return false;
-      } else {
-        $user = $result->fetch_assoc();
-        $hashSalt = $user['salt'];
-        $saltedHashedPassword = hash("sha256", $hashSalt . $password);
-    
-        if ($saltedHashedPassword == $user['password']) {
-          return true;
-        } else {
-          return false;
-        }
-      } 
+  $query = "SELECT * FROM users WHERE username=?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows == 0) {
+    //no result of username provided found in database, return false
+    return false;
+
+  } else {
+    $user = $result->fetch_assoc();
+    $salt = $user['salt'];
+    $saltedHashedPassword = password_hash($salt.$password, PASSWORD_DEFAULT);
+
+    //compare hashed password
+    if (password_verify($saltedHashedPassword,$user['password']) ) {
+      return true;
+    } else{
+      return false;
+    }
+    }
 }
-function checkActiveSession($session){
-    //check authenticated active session 
+
+function checkActiveSession($username, $session){
+  $query = "SELECT * FROM users WHERE username=?";
+  $stmt = $conn->prepare($query);
+  $stmt->bind_param("s", $username);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
 }
 
 function logout(){

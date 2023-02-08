@@ -1,19 +1,27 @@
 <?php
+session_start();
 require_once('workingconnection.php');
 if(isset($GET['submit'])){
     if(isset($GET['currentPassword']) && isset($GET['newPassword']) && isset($GET['newPassword']))
     {
-        $stmt = $conn->prepare("SELECT * FROM  users WHERE username =  ?"); 
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
+        $username = $_SESSION['username'];
+        $password = $_GET['currentPassword'];
+        $newPassword = $_GET['newPassword'];
+        //reauthenticate with username in session and password provided
+        if(authenticate($username,$password)){
+            $stmt = $conn->prepare("SELECT * FROM  users WHERE username =  ?"); 
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
 
-        $stmt = $conn->prepare("UPDATE users set password = ? WHERE username =  ?"); 
-        $stmt->bind_param("ss", $username, $password);
-        if($stmt->execute()){
-            echo "Password changed successfully";
-        }        
+            $stmt = $conn->prepare("UPDATE users set password = ? WHERE username =  ?"); 
+            $stmt->bind_param("ss", $username, $newPassword);
+            if($stmt->execute()){
+                echo "Password changed successfully";
+            }
+        }
+                
     }
     else{
         echo "Please enter the required field!";
