@@ -37,7 +37,7 @@
             <div class="field-column">
                 <label>Confirm Password</label>
                 <div>
-                    <input type="password" class="input-box" name="cpassword" placeholder="Confirm Password" maxlength="14 "value="">
+                    <input type="password" class="input-box" name="cpassword" placeholder="Confirm Password" value="">
                 </div>
                 <?php //if(!empty($confirm_password_err)){echo $confirm_password_err;} ?>
             </div>
@@ -96,8 +96,11 @@ for ($i = 0; $i < 32; $i++) {
     $salt .= $characters[rand(0, $charactersLength - 1)];
 }
 
-$usernameExists = "SELECT * FROM users WHERE username='$username'";
-$result = $conn->query($usernameExists);
+	$usernameExists = "SELECT * FROM users WHERE username=?";
+	$stmt = $conn->prepare($usernameExists);
+	$stmt->bind_param("s", $username);
+	$stmt->execute();
+	$result = $stmt->get_result();
 
 	if ($result->num_rows > 0) {
 	echo "Username already exists<br>";
@@ -116,9 +119,10 @@ $result = $conn->query($usernameExists);
     }	else {
 		$hashSalt = hash("sha256", $salt);
 		$saltedHashedPassword = hash("sha256", $hashSalt . $password);
-		$sql = "INSERT INTO users (username, password, salt) 
-		VALUES ('$username', '$saltedHashedPassword', '$hashSalt')";
-		$result = $conn->query($sql);
+		$sql = "INSERT INTO users (username, password, salt) VALUES (?, ?, ?)";
+		$stmt = $conn->prepare($sql);
+		$stmt->bind_param("sss", $username, $saltedHashedPassword, $hashSalt);
+		$result = $stmt->execute();
 		echo "Registration successful!<br>";
 		header("Location: login.php");
 	    exit();
