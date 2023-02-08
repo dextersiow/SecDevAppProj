@@ -25,9 +25,9 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 	$encryptedUsername = base64_encode(openssl_encrypt($username, 'AES-128-ECB', $key));
 	$_SESSION['encrypted_username'] = $encryptedUsername;
       echo "Login successful!<br>";
-      header("Location: authpage1.php");
+	  header("Location: authpage1.php");
     } else {
-      echo "Incorrect password.<br>";
+      echo "The username ". $username . "and password could not be authenticated at the moment. <br>";
     }
   }
 } else {

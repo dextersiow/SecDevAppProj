@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
         <link href="css/bootstrap.css" rel="stylesheet">   
         <link href="css/registerform.css" rel="stylesheet">
-        <title>Secure App Dev</title>    
+        <title>Secure App Dev</title>  
+        
     </head>
     <body>
         <br><br><br>
@@ -52,7 +53,34 @@
 
         </div>
     </form>            
-        <br><br><br>
+    <br><br><br>
+    <script>
+        function checkPasswordComplexity() {
+            var password = document.getElementById("password").value;
+            var uppercase = /[A-Z]/;
+            var lowercase = /[a-z]/;
+            var number = /[0-9]/;
+            var special = /[!@#$%^&*(),.?":{}|<>]/;
+            
+            if (password.length >= 10) {
+                document.getElementById("password_complexity").innerHTML = "Password must be at least 10 characters long.";
+            }
+            if (uppercase.test(password)) {
+                document.getElementById("password_complexity").innerHTML = "Password must contain at least one uppercase letter";
+
+            }
+            if (lowercase.test(password)) {
+                document.getElementById("password_complexity").innerHTML = "Password must contain at least one lowercase letter";
+            }
+            if (number.test(password)) {
+                document.getElementById("password_complexity").innerHTML = "Password must contain at least one number";
+            }
+            if (special.test(password)) {
+                document.getElementById("password_complexity").innerHTML = "Password must contain at least one special character";
+            }
+        }
+
+    </script>
     </body>
 </html>
 <?php 
