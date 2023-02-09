@@ -33,15 +33,6 @@ function authenticate($username, $password){
     }
 }
 
-function checkActiveSession($username, $session){
-  $query = "SELECT * FROM users WHERE username=?";
-  $stmt = $conn->prepare($query);
-  $stmt->bind_param("s", $username);
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-}
-
 function logout(){
     //logout user
 }
@@ -69,4 +60,37 @@ function generateSalt() {
   return $salt;
 }
 
+function check_session($sess_id) {
+	$query="SELECT * FROM sessiontable WHERE sess_id = ?";
+	$stmt = $conn->prepare($query);
+  $stmt->bind_param("s", $sess_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+	if($result->num_rows == 0)
+	{
+		$row = $result->fetch_assoc();
+		return $row;
+	}
+	return FALSE;
+}
+
+function createSession($sess_id, $username){
+  $time = time();
+  $maxinactive = date("Y-m-d H:i:s" ,$time+3600);
+  $time = date("Y-m-d H:i:s" ,$time);
+
+  $creationtime = $time;
+  $lastaccess = $time;
+
+
+
+  if(!isset($username)){
+    $username= 'anonymous';
+  }
+  $query="INSERT INTO sessiontable (id, username, lastaccess, creationtime, maxinactivetime) VALUES (?, ?, ?)";
+	$stmt = $conn->prepare($query);
+  $stmt->bind_param("sssss", $sess_id, $username, $lastaccess, $creationtime, $maxinactive);
+  $stmt->execute();
+  $result = $stmt->get_result();
+}
 ?>

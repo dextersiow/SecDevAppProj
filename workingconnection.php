@@ -32,13 +32,12 @@ if (!$conn->query($sql) === TRUE) {
 }
 
 $sql = 'CREATE TABLE IF NOT EXISTS sessiontable (
-	sess_id int NOT NULL,
+	sess_id varchar(30) NOT NULL,
 	username varchar(256) NOT NULL,
 	lastaccess DATETIME,
 	creationtime DATETIME,
 	maxinactivetime DATETIME,
-	PRIMARY KEY (id),
-	FOREIGN KEY (username) REFERENCES username(username));';
+	PRIMARY KEY (id));';
 
 if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);
