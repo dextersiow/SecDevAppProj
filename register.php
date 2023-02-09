@@ -1,3 +1,43 @@
+<?php
+require_once('functions.php');
+require_once "connection.php";
+
+$username = $_POST["username"]; 
+$password = $_POST["password"];
+$cpassword = $_POST["cpassword"]; 
+
+$salt = generateSalt();
+$usernameExists = "SELECT * FROM users WHERE username=?";
+$stmt = $conn->prepare($usernameExists);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    echo "Username already exists<br>";
+} else if (!validatePassword($password)) {
+    echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
+} else if ($password != $cpassword) {
+      echo "Password does not match";
+} else {
+	$hashSalt = hash("sha256", $salt);
+	$saltedHashedPassword = hash("sha256", $hashSalt . $password);
+	$sql = "INSERT INTO users (username, password, salt) VALUES (?, ?, ?)";
+	$stmt = $conn->prepare($sql);
+	$stmt->bind_param("sss", $username, $saltedHashedPassword, $hashSalt);
+	$result = $stmt->execute();
+
+    if($result){
+        echo "Registration successful!<br>";
+        header("Location: login.php");
+    } else {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html> 
 
 <html>
@@ -29,9 +69,8 @@
             <div class="field-column">
                 <label>Password</label>
                 <div>
-                    <input type="password" class="input-box" name="password" placeholder="Password" value="">
+                    <input type="password" class="input-box" name="password" placeholder="Password" id="password" value="" oninput="checkPasswordComplexity()" required>
                 </div>
-                <?php //if(!empty($password_err)){echo $password_err;} ?>
             </div>
 
             <div class="field-column">
@@ -39,7 +78,6 @@
                 <div>
                     <input type="password" class="input-box" name="cpassword" placeholder="Confirm Password" value="">
                 </div>
-                <?php //if(!empty($confirm_password_err)){echo $confirm_password_err;} ?>
             </div>
 
             <div class="field-column">
@@ -83,57 +121,3 @@
     </script>
     </body>
 </html>
-<?php 
-require_once "connection.php";
-$username = $_POST["username"]; 
-$password = $_POST["password"];
-$cpassword = $_POST["cpassword"]; 
-
-$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-$charactersLength = strlen($characters);
-$salt = '';
-for ($i = 0; $i < 32; $i++) {
-    $salt .= $characters[rand(0, $charactersLength - 1)];
-}
-
-	$usernameExists = "SELECT * FROM users WHERE username=?";
-	$stmt = $conn->prepare($usernameExists);
-	$stmt->bind_param("s", $username);
-	$stmt->execute();
-	$result = $stmt->get_result();
-
-	if ($result->num_rows > 0) {
-	echo "Username already exists<br>";
-	} else if (strlen($password) < 10) {
-      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if (!preg_match("#[a-z]+#", $password)) {
-      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if (!preg_match("#[A-Z]+#", $password)) {
-     echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if (!preg_match("#[0-9]+#", $password)) {
-      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $password)) {
-      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if ($password != $cpassword) {
-      echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    }	else {
-		$hashSalt = hash("sha256", $salt);
-		$saltedHashedPassword = hash("sha256", $hashSalt . $password);
-		$sql = "INSERT INTO users (username, password, salt) VALUES (?, ?, ?)";
-		$stmt = $conn->prepare($sql);
-		$stmt->bind_param("sss", $username, $saltedHashedPassword, $hashSalt);
-		$result = $stmt->execute();
-		echo "Registration successful!<br>";
-		header("Location: login.php");
-	    exit();
-    }
-	
-	
-if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully <br>";
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}
-
-$conn->close();
-?>

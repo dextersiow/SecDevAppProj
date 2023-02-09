@@ -1,12 +1,14 @@
 <?php
 session_start();
 require_once('workingconnection.php');
+require_once('functions.php');
 if(isset($GET['submit'])){
-    if(isset($GET['currentPassword']) && isset($GET['newPassword']) && isset($GET['newPassword']))
+    if(isset($GET['currentPassword']) && isset($GET['newPassword']) && isset($GET['newPasswordConfirm']))
     {
         $username = $_SESSION['username'];
         $password = $_GET['currentPassword'];
         $newPassword = $_GET['newPassword'];
+
         //reauthenticate with username in session and password provided
         if(authenticate($username,$password)){
             $stmt = $conn->prepare("SELECT * FROM  users WHERE username =  ?"); 
@@ -15,8 +17,14 @@ if(isset($GET['submit'])){
             $result = $stmt->get_result();
             $user = $result->fetch_assoc();
 
+            //hash password
+            $salt = generateSalt();
+            $hashSalt = hash("sha256", $salt);
+	        $saltedHashedPassword = hash("sha256", $hashSalt . $newPassword);
+
+            //update database
             $stmt = $conn->prepare("UPDATE users set password = ? WHERE username =  ?"); 
-            $stmt->bind_param("ss", $username, $newPassword);
+            $stmt->bind_param("ss", $saltedHashedPassword, $username);
             if($stmt->execute()){
                 echo "Password changed successfully";
             }

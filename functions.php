@@ -22,10 +22,10 @@ function authenticate($username, $password){
   } else {
     $user = $result->fetch_assoc();
     $salt = $user['salt'];
-    $saltedHashedPassword = password_hash($salt.$password, PASSWORD_DEFAULT);
+    $saltedHashedPassword = hash("sha256", $salt . $password);
 
     //compare hashed password
-    if (password_verify($saltedHashedPassword,$user['password']) ) {
+    if ($password == $saltedHashedPassword) {
       return true;
     } else{
       return false;
@@ -59,6 +59,14 @@ function validatePassword(){
   }
 }
 
-
+function generateSalt() {
+  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $charactersLength = strlen($characters);
+  $salt = '';
+  for ($i = 0; $i < 10; $i++) {
+      $randomString .= $characters[random_int(0, $charactersLength - 1)];
+  }
+  return $salt;
+}
 
 ?>
