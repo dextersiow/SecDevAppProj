@@ -3,26 +3,24 @@ session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
 
-
-
 if (isset($_POST['username']) && isset($_POST['password'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
 
   //authenticate user
-  if(authenticate($username,$password)){
+  if(authenticate($conn, $username,$password)){
+
     session_id(session_create_id());
+    set_session($username);
+
     echo "Login successful!<br>";
-	  header("Location: authpage1.php");
+	  header("Location: index.php");
   } else {
-    echo "The username ". $username . "and password could not be authenticated at the moment. <br>";
+    echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
   }
 
-} else {
-  echo "Please enter a username and password.<br>";
-}
+} 
 
-$conn->close();
 ?>
 
 
@@ -48,11 +46,6 @@ $conn->close();
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
         
-        <div class="checkbox mb-1">
-            <label>
-            <input type="checkbox" name="rmb" value="remember-me"/> Remember me
-            </label>
-        </div>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 

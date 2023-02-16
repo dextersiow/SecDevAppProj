@@ -1,5 +1,5 @@
 <?php
-require_once "connection.php";
+
 function filter($input){
   $input = str_replace("<", "&lt;", $input);
   $input = str_replace(">", "&gt;", $input);
@@ -8,7 +8,7 @@ function filter($input){
   return $input;
 }
 
-function authenticate($username, $password){
+function authenticate($conn, $username, $password){
   $query = "SELECT * FROM users WHERE username=?";
   $stmt = $conn->prepare($query);
   $stmt->bind_param("s", $username);
@@ -23,21 +23,22 @@ function authenticate($username, $password){
     $user = $result->fetch_assoc();
     $salt = $user['salt'];
     $saltedHashedPassword = hash("sha256", $salt . $password);
+    
 
     //compare hashed password
-    if ($password == $saltedHashedPassword) {
+    if ($user['password'] == $saltedHashedPassword) {
       return true;
     } else{
       return false;
     }
-    }
+  }
 }
 
 function logout(){
     //logout user
 }
 
-function validatePassword(){
+function validatePassword($password){
   $uppercase = preg_match('@[A-Z]@', $password);
   $lowercase = preg_match('@[a-z]@', $password);
   $number    = preg_match('@[0-9]@', $password);
@@ -55,26 +56,38 @@ function generateSalt() {
   $charactersLength = strlen($characters);
   $salt = '';
   for ($i = 0; $i < 10; $i++) {
-      $randomString .= $characters[random_int(0, $charactersLength - 1)];
+      $salt .= $characters[random_int(0, $charactersLength - 1)];
   }
   return $salt;
 }
 
-function check_session($sess_id) {
-	$query="SELECT * FROM sessiontable WHERE sess_id = ?";
-	$stmt = $conn->prepare($query);
-  $stmt->bind_param("s", $sess_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-	if($result->num_rows == 0)
-	{
-		$row = $result->fetch_assoc();
-		return $row;
-	}
-	return FALSE;
+function set_session($username) {  
+  $time = time();
+  $maxinactive = date("Y-m-d H:i:s" ,$time+3600);
+  $time = date("Y-m-d H:i:s" ,$time);
+
+	$_SESSION['username'] = $username;
+  $_SESSION['loggedin'] = TRUE;
+  $_SESSION['lastaccess'] = $time;
+  $_SESSION['creationtime'] = $time;
+  $_SESSION['maxinactive'] = $maxinactive;
 }
 
-function createSession($sess_id, $username){
+function check_timeout() {
+  if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 600)) {
+    // last request was more than 30 minutes ago
+    return false;
+  }
+  else{
+    return true;
+  }
+}
+
+function update_session() {
+  $_SESSION['lastaccess'] = time();
+}
+
+function createSessionEntry(){
   $time = time();
   $maxinactive = date("Y-m-d H:i:s" ,$time+3600);
   $time = date("Y-m-d H:i:s" ,$time);
@@ -82,12 +95,13 @@ function createSession($sess_id, $username){
   $creationtime = $time;
   $lastaccess = $time;
 
-
-
-  if(!isset($username)){
+  if(!isset($_SESSION['username'])){
     $username= 'anonymous';
   }
-  $query="INSERT INTO sessiontable (id, username, lastaccess, creationtime, maxinactivetime) VALUES (?, ?, ?)";
+  else{
+    $username = $_SESSION['username'];
+  }
+  $query="INSERT INTO sessiontable (id, username, lastaccess, creationtime, maxinactivetime) VALUES (?, ?, ?, ?, ?)";
 	$stmt = $conn->prepare($query);
   $stmt->bind_param("sssss", $sess_id, $username, $lastaccess, $creationtime, $maxinactive);
   $stmt->execute();

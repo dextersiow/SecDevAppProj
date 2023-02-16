@@ -9,6 +9,13 @@ if ($conn->connect_error) {
 	die('Connection Failed: ' . $conn->connect_error);
 }
 
+if (isset($_POST['delete-everything'])) {
+	$sql = 'DROP DATABASE secureapp;';
+	if (!$conn->query($sql) === TRUE) {
+	  die('Error dropping database: ' . $conn->error);
+	}
+  }
+
 $sql = 'CREATE DATABASE IF NOT EXISTS secureapp;';
 if (!$conn->query($sql) === TRUE) {
 	die('Error creating database: ' . $conn->error);
@@ -37,7 +44,7 @@ $sql = 'CREATE TABLE IF NOT EXISTS sessiontable (
 	lastaccess DATETIME,
 	creationtime DATETIME,
 	maxinactivetime DATETIME,
-	PRIMARY KEY (id));';
+	PRIMARY KEY (sess_id));';
 
 if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);
