@@ -2,6 +2,11 @@
 session_start();
 require_once('workingconnection.php');
 require_once('functions.php');
+//check if logged in
+if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
+    header("location: index.php");
+    exit;
+  }
 if(isset($GET['submit'])){
     if(isset($GET['currentPassword']) && isset($GET['newPassword']) && isset($GET['newPasswordConfirm']))
     {

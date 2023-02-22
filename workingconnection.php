@@ -38,26 +38,15 @@ if (!$conn->query($sql) === TRUE) {
 	die('Error creating table: ' .$con->error);
 }
 
-$sql = 'CREATE TABLE IF NOT EXISTS sessiontable (
-	sess_id varchar(30) NOT NULL,
-	username varchar(256) NOT NULL,
-	lastaccess DATETIME,
-	creationtime DATETIME,
-	maxinactivetime DATETIME,
-	PRIMARY KEY (sess_id));';
-
-if (!$conn->query($sql) === TRUE) {
-  die('Error creating table: ' . $conn->error);
-}
-
 $sql = 'CREATE TABLE IF NOT EXISTS eventlog (
 	id int NOT NULL AUTO_INCREMENT,
-	action varchar(20) NOT NULL,
 	sess_id varchar(256) NOT NULL,
+	ip_address varchar(20),
+	user_agent varchar(20),
+	action varchar(20) NOT NULL,
 	attempt BOOLEAN,
 	creationtime DATETIME,
-	PRIMARY KEY (id),
-	FOREIGN KEY (sess_id) REFERENCES sessiontable(sess_id));';
+	PRIMARY KEY (id));';
 
 if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);

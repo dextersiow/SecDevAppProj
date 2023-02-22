@@ -1,11 +1,8 @@
 <?php
 session_start();
+require_once "functions.php";
+
+logout();
  
-$_SESSION = array();
- 
-session_unset();
-session_destroy();
- 
-header("location: login.php");
 exit;
 ?>

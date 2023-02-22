@@ -36,6 +36,13 @@ function authenticate($conn, $username, $password){
 
 function logout(){
     //logout user
+    $_SESSION = array();
+    
+    session_unset();
+    session_destroy();
+    session_regenerate_id();
+    
+    header("location: login.php");
 }
 
 function validatePassword($password){
@@ -58,19 +65,21 @@ function generateSalt() {
   for ($i = 0; $i < 10; $i++) {
       $salt .= $characters[random_int(0, $charactersLength - 1)];
   }
+  //$salt = bin2hex(openssl_random_pseudo_bytes(16));
   return $salt;
 }
 
 function set_session($username) {  
   $time = time();
-  $maxinactive = date("Y-m-d H:i:s" ,$time+3600);
-  $time = date("Y-m-d H:i:s" ,$time);
+  //$datetime = date("Y-m-d H:i:s" ,$time);
 
 	$_SESSION['username'] = $username;
   $_SESSION['loggedin'] = TRUE;
   $_SESSION['lastaccess'] = $time;
   $_SESSION['creationtime'] = $time;
   $_SESSION['maxinactive'] = $maxinactive;
+  ini_set('session.gc_maxlifetime', 600);
+  ini_set('session.cookie_lifetime', 600);
 }
 
 function check_timeout() {
@@ -106,5 +115,14 @@ function createSessionEntry(){
   $stmt->bind_param("sssss", $sess_id, $username, $lastaccess, $creationtime, $maxinactive);
   $stmt->execute();
   $result = $stmt->get_result();
+}
+
+function checkSession($session){
+  if($session == sessionid()){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 ?>

@@ -3,6 +3,12 @@ session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
 
+//check if logged in
+if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
+  header("location: index.php");
+  exit;
+}
+
 if (isset($_POST['username']) && isset($_POST['password'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
@@ -10,16 +16,17 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
   //authenticate user
   if(authenticate($conn, $username,$password)){
 
-    session_id(session_create_id());
+    session_regenerate_id();
     set_session($username);
-
     echo "Login successful!<br>";
 	  header("Location: index.php");
+
   } else {
     echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
   }
 
 } 
+
 
 ?>
 
