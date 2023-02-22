@@ -75,25 +75,26 @@ function set_session($username) {
 
 	$_SESSION['username'] = $username;
   $_SESSION['loggedin'] = TRUE;
-  $_SESSION['lastaccess'] = $time;
+  $_SESSION['LAST_ACTIVITY'] = $time;
   $_SESSION['creationtime'] = $time;
-  $_SESSION['maxinactive'] = $maxinactive;
-  ini_set('session.gc_maxlifetime', 600);
-  ini_set('session.cookie_lifetime', 600);
+  $_SESSION['csrf_token'] = generateSalt();
+
+  ini_set('session.gc_maxlifetime', 3600);
+  ini_set('session.cookie_lifetime', 3600);
 }
 
 function check_timeout() {
   if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 600)) {
-    // last request was more than 30 minutes ago
-    return false;
+    // last request was more than 10 minutes ago
+    return true;
   }
   else{
-    return true;
+    return false;
   }
 }
 
 function update_session() {
-  $_SESSION['lastaccess'] = time();
+  $_SESSION['LAST_ACTIVITY'] = time();
 }
 
 function createSessionEntry(){
