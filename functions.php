@@ -69,14 +69,15 @@ function generateSalt() {
   return $salt;
 }
 
-function set_session($username) {  
-  $time = time();
-  //$datetime = date("Y-m-d H:i:s" ,$time);
+function set_session($username, $ip_address, $user_agent) {   
+  ini_set('session.gc_maxlifetime', 3600);
+  ini_set('session.cookie_lifetime', 3600); 
 
 	$_SESSION['username'] = $username;
   $_SESSION['loggedin'] = TRUE;
-  $_SESSION['LAST_ACTIVITY'] = $time;
-  $_SESSION['creationtime'] = $time;
+  $_SESSION['ip_address'] = $ip_address;
+  $_SESSION['user_agent'] = $user_agent;
+  $_SESSION['LAST_ACTIVITY'] = time();
   $_SESSION['csrf_token'] = generateSalt();
 
   ini_set('session.gc_maxlifetime', 3600);
@@ -97,33 +98,15 @@ function update_session() {
   $_SESSION['LAST_ACTIVITY'] = time();
 }
 
-function createSessionEntry(){
-  $time = time();
-  $maxinactive = date("Y-m-d H:i:s" ,$time+3600);
-  $time = date("Y-m-d H:i:s" ,$time);
 
-  $creationtime = $time;
-  $lastaccess = $time;
-
-  if(!isset($_SESSION['username'])){
-    $username= 'anonymous';
-  }
-  else{
-    $username = $_SESSION['username'];
-  }
-  $query="INSERT INTO sessiontable (id, username, lastaccess, creationtime, maxinactivetime) VALUES (?, ?, ?, ?, ?)";
-	$stmt = $conn->prepare($query);
-  $stmt->bind_param("sssss", $sess_id, $username, $lastaccess, $creationtime, $maxinactive);
+function logEvent($conn, $username, $action_type, $action) {
+ 
+  $sql = "INSERT INTO event_log (username, sess_id, ip_address, user_agent, action, description) VALUES (?, ?, ?, ?, ?, ?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssss", $username, $sess_id, $ip_address, $user_agent, $action, $description);
   $stmt->execute();
-  $result = $stmt->get_result();
+
+  $stmt->close();
 }
 
-function checkSession($session){
-  if($session == sessionid()){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
 ?>

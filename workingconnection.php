@@ -40,13 +40,15 @@ if (!$conn->query($sql) === TRUE) {
 
 $sql = 'CREATE TABLE IF NOT EXISTS eventlog (
 	id int NOT NULL AUTO_INCREMENT,
+	username varchar(256) NOT NULL,
 	sess_id varchar(256) NOT NULL,
 	ip_address varchar(20),
 	user_agent varchar(20),
 	action varchar(20) NOT NULL,
-	attempt BOOLEAN,
-	creationtime DATETIME,
-	PRIMARY KEY (id));';
+	description BOOLEAN,
+	timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),	
+    FOREIGN KEY (username) REFERENCES users(username));';
 
 if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);

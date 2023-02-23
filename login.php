@@ -12,12 +12,14 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
 if (isset($_POST['username']) && isset($_POST['password'])) {
   $username = $_POST['username'];
   $password = $_POST['password'];
+  $ip_address = $_SERVER['REMOTE_ADDR'];
+  $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
   //authenticate user
   if(authenticate($conn, $username,$password)){
 
     session_regenerate_id();
-    set_session($username);
+    set_session($username, $ip_address, $user_agent);
     echo "Login successful!<br>";
 	  header("Location: index.php");
 
