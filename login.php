@@ -3,11 +3,22 @@ session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
 
+$allowed_attempts = 3;
+$lockout_time = 180; // 3 minutes in seconds
+$now = time();
+
 //check if logged in
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
   header("location: index.php");
   exit;
 }
+
+// Check if the user has been locked out
+if (isset($_SESSION[$failed_attempts_key]) && $_SESSION[$failed_attempts_key] >= $allowed_attempts) {
+  $remaining_time = $lockout_time - ($now - $_SESSION[$last_attempt_key]);
+  echo "Account locked out. Please try again in $remaining_time seconds.";
+}
+
 
 if (isset($_POST['username']) && isset($_POST['password'])) {
   $username = $_POST['username'];
@@ -18,12 +29,16 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
   //authenticate user
   if(authenticate($conn, $username,$password)){
 
+    unset($_SESSION[$failed_attempts_key]);
+    unset($_SESSION[$last_attempt_key]);
     session_regenerate_id();
     set_session($username, $ip_address, $user_agent);
     echo "Login successful!<br>";
 	  header("Location: index.php");
 
   } else {
+    $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
+    $_SESSION['last_attempt'] = $now;
     echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
   }
 
