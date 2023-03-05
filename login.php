@@ -3,7 +3,7 @@ session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
 
-$allowed_attempts = 3;
+$allowed_attempts = 5; //login allowed attempts
 $lockout_time = 180; // 3 minutes in seconds
 $now = time();
 
@@ -18,32 +18,38 @@ if (isset($_SESSION[$failed_attempts_key]) && $_SESSION[$failed_attempts_key] >=
   $remaining_time = $lockout_time - ($now - $_SESSION[$last_attempt_key]);
   echo "Account locked out. Please try again in $remaining_time seconds.";
 }
+// proceed to authentication if not locked out
+else if (isset($_POST['username']) && isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $ip_address = $_SERVER['REMOTE_ADDR'];
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
+    //authenticate user
+    if(authenticate($conn, $username,$password)){
 
-if (isset($_POST['username']) && isset($_POST['password'])) {
-  $username = $_POST['username'];
-  $password = $_POST['password'];
-  $ip_address = $_SERVER['REMOTE_ADDR'];
-  $user_agent = $_SERVER['HTTP_USER_AGENT'];
+      // Reset the failed attempts and last attempt time for this user
+      unset($_SESSION[$failed_attempts_key]);
+      unset($_SESSION[$last_attempt_key]);
 
-  //authenticate user
-  if(authenticate($conn, $username,$password)){
+      //regenetate session id
+      session_regenerate_id();
 
-    unset($_SESSION[$failed_attempts_key]);
-    unset($_SESSION[$last_attempt_key]);
-    session_regenerate_id();
-    set_session($username, $ip_address, $user_agent);
-    echo "Login successful!<br>";
-	  header("Location: index.php");
+      //set session variables for authenticate user
+      set_session($username, $ip_address, $user_agent);
 
-  } else {
-    $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
-    $_SESSION['last_attempt'] = $now;
-    echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
-  }
+      //log event
+      logEvent($conn,$username,'login','successfull');
 
-} 
+      //echo "Login successful!<br>";
+      header("Location: index.php");
 
+    } else {
+      $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
+      $_SESSION['last_attempt'] = $now;
+      echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
+    }
+  } 
 
 ?>
 

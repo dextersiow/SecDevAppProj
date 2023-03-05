@@ -99,7 +99,7 @@ function update_session() {
 }
 
 
-function logEvent($conn, $username, $action_type, $action) {
+function logEvent($conn, $username, $action, $description) {
  
   $sql = "INSERT INTO event_log (username, sess_id, ip_address, user_agent, action, description) VALUES (?, ?, ?, ?, ?, ?)";
   $stmt = $conn->prepare($sql);
