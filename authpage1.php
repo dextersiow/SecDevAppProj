@@ -36,7 +36,7 @@
 
         // start timer function
         function startTimer() {
-            timeout = setTimeout(redirect, 20000); // 20 seconds in milliseconds
+            timeout = setTimeout(redirect, 600000); // 10 minutes in milliseconds
         }
 
         // reset timer function
@@ -56,7 +56,7 @@
         // reset the timer on mouse move or keyboard activity
         document.onmousemove = resetTimer;
         document.onkeydown = resetTimer;
+		document.onwheel = resetTimer;
     </script>
 </body>
 </html>
-
