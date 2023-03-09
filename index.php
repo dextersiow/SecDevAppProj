@@ -3,6 +3,7 @@
 session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
+date_default_timezone_set('Europe/London');
 
 // Check if the user is logged in, if not redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
@@ -33,7 +34,9 @@ update_session();
     <div class="page-header">
         <h1>Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>. Welcome to our site.</h1>
     </div>
-    <p><?php echo $_SESSION['LAST_ACTIVITY'] ?></p>
+    <p><?php echo "Last Activity: ".date("Y-m-d h:i:sa", $_SESSION['LAST_ACTIVITY']) ?></p>
+    <p><?php echo "Next Timeout: ".date("Y-m-d h:i:sa", $_SESSION['LAST_ACTIVITY']+600) ?></p>
+    <p><?php echo "Max Timeout: ".date("Y-m-d h:i:sa", $_SESSION['timeout']) ?></p>
     <p>
         <a href="changepassword.php" class="btn btn-warning">Reset Your Password</a>
         <a href="logout.php" class="btn btn-danger">Sign Out of Your Account</a>

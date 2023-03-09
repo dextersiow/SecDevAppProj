@@ -6,7 +6,7 @@ require_once "workingconnection.php";
 require_once "functions.php";
 
 $allowed_attempts = 5; //login allowed attempts
-$lockout_time = 180; // 3 minutes in seconds
+$lockout_time = 30; // 3 minutes in seconds
 $now = time();
 
 //check if logged in
@@ -15,13 +15,22 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
   exit;
 }
 
-// Check if the user has been locked out
-if (isset($_SESSION['failed_attempts_key']) && $_SESSION['failed_attempts_key'] >= $allowed_attempts) {
-  $remaining_time = $lockout_time - ($now - $_SESSION['last_attempt_key']);
-  echo "Account locked out. Please try again in $remaining_time seconds.";
-}
-// proceed to authentication if not locked out
-else if (isset($_POST['username']) && isset($_POST['password'])) {
+
+if (isset($_POST['username']) && isset($_POST['password'])) {
+
+  // Check if the user has been locked out
+  if (isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] >= $allowed_attempts) {
+    $remaining_time = $lockout_time - ($now - $_SESSION['last_attempt']);
+    $lock_msg = "<div>Account locked out. Please try again in $remaining_time seconds.</div>";
+  }
+  //remaning time > 0, do nothing 
+  if(isset($remaining_time) && $remaining_time>0){
+
+  }
+  else{    //else authenticate user
+    if(isset($remaining_time) && $remaining_time<0){
+      $_SESSION['failed_attempts'] = 0;
+    }
     $username = $_POST['username'];
     $password = $_POST['password'];
     $ip_address = $_SERVER['REMOTE_ADDR'];
@@ -31,8 +40,8 @@ else if (isset($_POST['username']) && isset($_POST['password'])) {
     if(authenticate($conn, $username,$password)){
 
       // Reset the failed attempts and last attempt time for this user
-      unset($_SESSION['failed_attempts_key']);
-      unset($_SESSION['last_attempt_key']);
+      unset($_SESSION['failed_attempts']);
+      unset($_SESSION['last_attempt']);
 
       //regenetate session id
       session_regenerate_id();
@@ -48,9 +57,14 @@ else if (isset($_POST['username']) && isset($_POST['password'])) {
 
     } else {
       $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
-      $_SESSION['last_attempt'] = $now;
-      echo "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
+      $_SESSION['last_attempt'] = $now;      
+      $fail_attempts= "Failed Attempts: ".$_SESSION['failed_attempts']."<br>";
+      $err_msg = "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
     }
+  }
+
+  
+  
   } 
 
 ?>
@@ -77,7 +91,19 @@ else if (isset($_POST['username']) && isset($_POST['password'])) {
 
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-        
+        <span>
+        <?php
+        if(isset($err_msg)){
+          echo $err_msg.'<br>';
+        }
+        if(isset($fail_attempts)){
+          echo "Failed attempts: ".$fail_attempts;
+        }
+        if(isset($lock_msg)&& $remaining_time>0){
+          echo $lock_msg;
+        }
+        ?>
+        </span>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 
