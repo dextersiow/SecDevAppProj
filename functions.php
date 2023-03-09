@@ -70,9 +70,6 @@ function generateSalt() {
 }
 
 function set_session($username, $ip_address, $user_agent) {   
-  ini_set('session.gc_maxlifetime', 3600);
-  ini_set('session.cookie_lifetime', 3600); 
-
 	$_SESSION['username'] = $username;
   $_SESSION['loggedin'] = TRUE;
   $_SESSION['ip_address'] = $ip_address;
@@ -80,8 +77,6 @@ function set_session($username, $ip_address, $user_agent) {
   $_SESSION['LAST_ACTIVITY'] = time();
   $_SESSION['csrf_token'] = generateSalt();
 
-  ini_set('session.gc_maxlifetime', 3600);
-  ini_set('session.cookie_lifetime', 3600);
 }
 
 function check_timeout() {
@@ -99,9 +94,9 @@ function update_session() {
 }
 
 
-function logEvent($conn, $username, $action, $description) {
+function logEvent($conn, $username, $sess_id, $ip_address, $user_agent, $action, $description) {
  
-  $sql = "INSERT INTO event_log (username, sess_id, ip_address, user_agent, action, description) VALUES (?, ?, ?, ?, ?, ?)";
+  $sql = "INSERT INTO eventlog (username, sess_id, ip_address, user_agent, action, description) VALUES (?, ?, ?, ?, ?, ?)";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ssssss", $username, $sess_id, $ip_address, $user_agent, $action, $description);
   $stmt->execute();

@@ -45,10 +45,9 @@ $sql = 'CREATE TABLE IF NOT EXISTS eventlog (
 	ip_address varchar(20),
 	user_agent varchar(20),
 	action varchar(20) NOT NULL,
-	description BOOLEAN,
+	description varchar(20),
 	timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY (id),	
-    FOREIGN KEY (username) REFERENCES users(username));';
+	PRIMARY KEY (id));';
 
 if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);

@@ -1,4 +1,6 @@
 <?php 
+ini_set('session.gc_maxlifetime', 3600);
+ini_set('session.cookie_lifetime', 3600);
 session_start();
 require_once "workingconnection.php";
 require_once "functions.php";
@@ -14,8 +16,8 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
 }
 
 // Check if the user has been locked out
-if (isset($_SESSION[$failed_attempts_key]) && $_SESSION[$failed_attempts_key] >= $allowed_attempts) {
-  $remaining_time = $lockout_time - ($now - $_SESSION[$last_attempt_key]);
+if (isset($_SESSION['failed_attempts_key']) && $_SESSION['failed_attempts_key'] >= $allowed_attempts) {
+  $remaining_time = $lockout_time - ($now - $_SESSION['last_attempt_key']);
   echo "Account locked out. Please try again in $remaining_time seconds.";
 }
 // proceed to authentication if not locked out
@@ -29,8 +31,8 @@ else if (isset($_POST['username']) && isset($_POST['password'])) {
     if(authenticate($conn, $username,$password)){
 
       // Reset the failed attempts and last attempt time for this user
-      unset($_SESSION[$failed_attempts_key]);
-      unset($_SESSION[$last_attempt_key]);
+      unset($_SESSION['failed_attempts_key']);
+      unset($_SESSION['last_attempt_key']);
 
       //regenetate session id
       session_regenerate_id();
@@ -39,7 +41,7 @@ else if (isset($_POST['username']) && isset($_POST['password'])) {
       set_session($username, $ip_address, $user_agent);
 
       //log event
-      logEvent($conn,$username,'login','successfull');
+      logEvent($conn,$username,session_id(),$ip_address,$user_agent,'login','successfull');
 
       //echo "Login successful!<br>";
       header("Location: index.php");
