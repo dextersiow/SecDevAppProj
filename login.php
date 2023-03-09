@@ -59,7 +59,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
       $_SESSION['failed_attempts'] = isset($_SESSION['failed_attempts']) ? $_SESSION['failed_attempts'] + 1 : 1;
       $_SESSION['last_attempt'] = $now;      
       $fail_attempts= "Failed Attempts: ".$_SESSION['failed_attempts']."<br>";
-      $err_msg = "The username <b> ". $username . " </b> and password could not be authenticated at the moment. <br>";
+      $err_msg = "The username <b> ". filter($username) . " </b> and password could not be authenticated at the moment. <br>";
     }
   }
 
