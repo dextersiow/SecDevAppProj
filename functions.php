@@ -105,4 +105,8 @@ function logEvent($conn, $username, $sess_id, $ip_address, $user_agent, $action,
   $stmt->close();
 }
 
+function messagebox ($message){
+  echo "<script>alert('" .$message. "')</script>";
+}
+
 ?>

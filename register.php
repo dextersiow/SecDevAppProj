@@ -68,7 +68,6 @@ if(isset($_POST['register-member'])){
                 <div>
                     <input type="text" class="input-box" name="username" placeholder="Username" value="<?php //if(!empty($_POST['username'])){echo $_POST['username'];}?>">
                 </div>
-                <?php //if(!empty($email_err)){echo $email_err;} ?>
             </div>
 
             <div class="field-column">
@@ -94,6 +93,8 @@ if(isset($_POST['register-member'])){
                     
                 </div>
             </div>
+
+            
 
         </div>
     </form>            
