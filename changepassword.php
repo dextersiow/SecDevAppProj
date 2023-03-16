@@ -3,25 +3,32 @@ session_start();
 require_once('workingconnection.php');
 require_once('functions.php');
 
-//check if logged in
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+//check if role isset = is logged in
+if(!isset($_SESSION["role"])){
     header("location: login.php");
     exit;
 }
 
+//check timeout
 if (check_timeout()){
+    messagebox('Session Timeout. Please Login Again.');
     logout();
     exit;
 }
 
+//update session time on new request
 update_session();
+
+    
+    print_r ($_SESSION);
+    
 if(isset($_GET['submit'])){    
-
+    print_r($_GET);
     //csrf token doesn't match or exist, logout user
-    if ($_GET['csrf_token'] !== $_SESSION['csrf_token'] || isset($_GET['csrf_token'])) {
+    if ($_GET['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_GET['csrf_token'])) {
 
-        logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Invalid CSRF token');
-        logout();
+        logEvent($conn,$_SESSION['username'],session_id(),$_SESSION['ip_address'],$_SESSION['user_agent'],'Change Password','Invalid CSRF token');
+        //logout();
         //The CSRF token is invalid, do not process the request
     }
 
@@ -57,9 +64,10 @@ if(isset($_GET['submit'])){
                     messagebox('Unexpected error updating database. Please try again.');
                 }
                 else{
-                    logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Successful');
+                    logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Successful');  
                     messagebox('Password changed successfully');
-                    logout();
+                    sleep(10);
+                    //logout();
                 }
 
             }else{

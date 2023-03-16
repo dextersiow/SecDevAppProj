@@ -75,6 +75,7 @@ function set_session($username, $ip_address, $user_agent) {
   $_SESSION['ip_address'] = $ip_address;
   $_SESSION['user_agent'] = $user_agent;
   $_SESSION['LAST_ACTIVITY'] = time();
+  $_SESSION['role'] = 'user';
   $_SESSION['csrf_token'] = generateSalt();
   $_SESSION['timeout'] = time() + 3600;
 

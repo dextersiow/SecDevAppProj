@@ -49,7 +49,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
       //set session variables for authenticate user
       set_session($username, $ip_address, $user_agent);
 
-      //log event
+      //log successfull event
       logEvent($conn,$username,session_id(),$ip_address,$user_agent,'login','successfull');
 
       //echo "Login successful!<br>";
@@ -60,6 +60,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
       $_SESSION['last_attempt'] = $now;      
       $fail_attempts= "Failed Attempts: ".$_SESSION['failed_attempts']."<br>";
       $err_msg = "The username <b> ". filter($username) . " </b> and password could not be authenticated at the moment. <br>";
+      //log fail event
+      logEvent($conn,$username,session_id(),$ip_address,$user_agent,'login','unsuccessfull');
     }
   }
 

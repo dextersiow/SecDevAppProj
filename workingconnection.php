@@ -40,7 +40,7 @@ if (!$conn->query($sql) === TRUE) {
 
 $sql = 'CREATE TABLE IF NOT EXISTS eventlog (
 	id int NOT NULL AUTO_INCREMENT,
-	username varchar(256) NOT NULL,
+	username varchar(256),
 	sess_id varchar(256) NOT NULL,
 	ip_address varchar(20),
 	user_agent varchar(20),
