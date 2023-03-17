@@ -26,6 +26,7 @@ $eventlog = geteventlog($conn);
 <!DOCTYPE html>
 <html>
 <head>
+	<link href="css/bootstrap.css" rel="stylesheet">
 	<title>Admin</title>
 	<style>
 		table {
@@ -48,10 +49,10 @@ $eventlog = geteventlog($conn);
 </head>
 <body>
 	<h1>Event Log</h1>
-	<table>
+	<table class='table'>
 		<thead>
 			<tr>
-				<th>id</th>
+				<th>ID</th>
 				<th>username</th>
 				<th>Session ID</th>
 				<th>IP Address</th>
@@ -77,5 +78,9 @@ $eventlog = geteventlog($conn);
 			}?>
 		</tbody>
 	</table>
+
+	<div>
+    	<a href='index.php'><button type='button' class="btn btn-secondary">Cancel</button></a>
+	</div>
 </body>
 </html>

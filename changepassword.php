@@ -24,7 +24,7 @@ if(isset($_GET['submit'])){
     if ($_GET['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_GET['csrf_token'])) {
 
         logEvent($conn,$_SESSION['username'],session_id(),$_SESSION['ip_address'],$_SESSION['user_agent'],'Change Password','Invalid CSRF token');
-        //logout();
+        logout();
         //The CSRF token is invalid, do not process the request
     }
 
@@ -62,8 +62,7 @@ if(isset($_GET['submit'])){
                 else{
                     logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Successful');  
                     messagebox('Password changed successfully');
-                    sleep(10);
-                    //logout();
+                    logout();
                 }
 
             }else{
@@ -129,7 +128,7 @@ if(isset($_GET['submit'])){
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
             </form> 
-            <a href='index.php'><button class="btn btn-lg btn-secondary btn-block" class="btnWarning">Cancel</button></a>
+            <a href='index.php'><button class="btn btn-lg btn-secondary btn-block">Cancel</button></a>
     
         </div>
             
