@@ -110,4 +110,10 @@ function messagebox ($message){
   echo "<script>alert('" .$message. "')</script>";
 }
 
+function geteventlog($conn){
+  $query = "SELECT * FROM eventlog";
+  $result = $conn->query($query);
+  return $result;
+}
+
 ?>

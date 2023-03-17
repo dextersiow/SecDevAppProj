@@ -11,7 +11,6 @@ if(!isset($_SESSION["role"])){
 
 //check timeout
 if (check_timeout()){
-    messagebox('Session Timeout. Please Login Again.');
     logout();
     exit;
 }
@@ -20,10 +19,7 @@ if (check_timeout()){
 update_session();
 
     
-    print_r ($_SESSION);
-    
 if(isset($_GET['submit'])){    
-    print_r($_GET);
     //csrf token doesn't match or exist, logout user
     if ($_GET['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_GET['csrf_token'])) {
 
