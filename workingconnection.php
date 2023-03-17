@@ -53,9 +53,15 @@ if (!$conn->query($sql) === TRUE) {
   die('Error creating table: ' . $conn->error);
 }
 
-$sql = "INSERT INTO users (username, password, salt, role) VALUES ('ADMIN', '041a54c0664eb9cb9f3cfe349655240bb929d5ca591e0ee50aad2b6ebf380c6e','58f1ade90d4c8929ae6d3bd0b82b3596d879ec96aa5cc930faf97617b41a638f', 'admin')";
-if (!$conn->query($sql) === TRUE) {
-	die('Error creating table: ' . $conn->error);
-  }
+$sql = "SELECT * FROM users WHERE username='ADMIN'";
+$result = $conn->query($sql);
+if($result->num_rows == 0){
+	$sql = "INSERT INTO users (username, password, salt, role) VALUES ('ADMIN', '041a54c0664eb9cb9f3cfe349655240bb929d5ca591e0ee50aad2b6ebf380c6e','58f1ade90d4c8929ae6d3bd0b82b3596d879ec96aa5cc930faf97617b41a638f', 'admin')";
+	if (!$conn->query($sql) === TRUE) {
+		die('Error creating table: ' . $conn->error);
+	  }
+}
+
+
 
 ?>

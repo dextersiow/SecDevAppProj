@@ -40,8 +40,14 @@ update_session();
     <p><?php echo "Max Timeout: ".date("Y-m-d h:i:sa", $_SESSION['timeout']) ?></p>
     
     <p>
+
+        <?php if($_SESSION['role'] != 'admin') {
+            echo '<a href="admin.php" class="btn btn-info">Admin Page</a>';
+            }
+        ?>
         <a href="changepassword.php" class="btn btn-warning">Reset Your Password</a>
         <a href="logout.php" class="btn btn-danger">Sign Out of Your Account</a>
+        
     </p>
 </body>
 </html>
