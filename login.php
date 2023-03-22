@@ -7,7 +7,7 @@ require_once "workingconnection.php";
 require_once "functions.php";
 
 $allowed_attempts = 5; //login allowed attempts
-$lockout_time = 30; // 3 minutes in seconds
+$lockout_time = 180; // 3 minutes in seconds
 $now = time();
 
 //check if logged in
