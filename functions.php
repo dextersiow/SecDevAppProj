@@ -27,7 +27,7 @@ function authenticate($conn, $username, $password){
 
     //compare hashed password
     if ($user['password'] == $saltedHashedPassword) {
-      return true;
+      return $user['role'];
     } else{
       return false;
     }
@@ -69,13 +69,13 @@ function generateSalt() {
   return $salt;
 }
 
-function set_session($username, $ip_address, $user_agent) {   
+function set_session($username, $ip_address, $user_agent,$role) {   
 	$_SESSION['username'] = $username;
   $_SESSION['loggedin'] = TRUE;
   $_SESSION['ip_address'] = $ip_address;
   $_SESSION['user_agent'] = $user_agent;
   $_SESSION['LAST_ACTIVITY'] = time();
-  $_SESSION['role'] = 'user';
+  $_SESSION['role'] = $role;
   $_SESSION['csrf_token'] = generateSalt();
   $_SESSION['timeout'] = time() + 3600;
 

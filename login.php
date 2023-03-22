@@ -38,7 +38,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
     //authenticate user
-    if(authenticate($conn, $username,$password)){
+    if($role = authenticate($conn, $username,$password)){
 
       // Reset the failed attempts and last attempt time for this user
       unset($_SESSION['failed_attempts']);
@@ -48,7 +48,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
       session_regenerate_id();
 
       //set session variables for authenticate user
-      set_session($username, $ip_address, $user_agent);
+      set_session($username, $ip_address, $user_agent, $role);
 
       //log successfull event
       logEvent($conn,$username,session_id(),$ip_address,$user_agent,'login','successfull');

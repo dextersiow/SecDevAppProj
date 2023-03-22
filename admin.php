@@ -4,7 +4,7 @@ require_once "workingconnection.php";
 require_once "functions.php";
 
 //check if role isset = is logged in and its admin
-if(!isset($_SESSION["role"]) && $_SESSION['role'] != 'admin'){
+if(!isset($_SESSION["role"]) || $_SESSION['role'] != 'admin'){
     header("location: login.php");
     exit;
 }

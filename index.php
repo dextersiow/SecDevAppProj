@@ -41,8 +41,9 @@ update_session();
     
     <p>
 
-        <?php if($_SESSION['role'] != 'admin') {
-            echo '<a href="admin.php" class="btn btn-info">Admin Page</a>';
+        <?php 
+            if($_SESSION['role'] == 'admin') {
+                echo '<a href="admin.php" class="btn btn-info">Admin Page</a>';
             }
         ?>
         <a href="changepassword.php" class="btn btn-warning">Reset Your Password</a>
