@@ -34,7 +34,14 @@ function authenticate($conn, $username, $password){
   }
 }
 
-function logout(){
+function logout($conn,$desc){
+
+  if(empty($desc)){
+    $desc = 'successfull';
+  }
+
+    //log logout event
+    logEvent($conn,$_SESSION['username'],session_id(),$_SERVER['REMOTE_ADDR'],$_SERVER['HTTP_USER_AGENT'],'Logout',$desc);  
     //logout user
     $_SESSION = array();
     

@@ -12,7 +12,7 @@ if(!isset($_SESSION["role"]) || $_SESSION['role'] != 'admin'){
 //check timeout
 if (check_timeout()){
     messagebox('Session Timeout. Please Login Again.');
-    logout();
+    logout($conn,'timeout');
     exit;
 }
 

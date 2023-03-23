@@ -11,7 +11,7 @@ if(!isset($_SESSION["role"])){
 
 //check timeout
 if (check_timeout()){
-    logout();
+    logout($conn,'timeout');
     exit;
 }
 
@@ -24,7 +24,7 @@ if(isset($_GET['submit'])){
     if ($_GET['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_GET['csrf_token'])) {
 
         logEvent($conn,$_SESSION['username'],session_id(),$_SESSION['ip_address'],$_SESSION['user_agent'],'Change Password','Invalid CSRF token');
-        logout();
+        logout($conn,'Invalid CSRF Token');
         //The CSRF token is invalid, do not process the request
     }
 
@@ -62,7 +62,7 @@ if(isset($_GET['submit'])){
                 else{
                     logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Successful');  
                     messagebox('Password changed successfully');
-                    logout();
+                    logout($conn,'Change Password');
                 }
 
             }else{

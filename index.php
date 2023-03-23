@@ -12,7 +12,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 }
 
 if (check_timeout()){
-    logout();
+    logout($conn,'timeout');
     exit;
 }
 

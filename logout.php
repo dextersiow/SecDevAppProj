@@ -2,7 +2,7 @@
 session_start();
 require_once "functions.php";
 
-logout();
+logout($conn);
  
 exit;
 ?>
