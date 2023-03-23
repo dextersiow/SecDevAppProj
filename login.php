@@ -16,22 +16,24 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] == true){
   exit;
 }
 
-
-if (isset($_POST['username']) && isset($_POST['password'])) {
-
-  // Check if the user has been locked out
+// Check if the user has been locked out
   if (isset($_SESSION['failed_attempts']) && $_SESSION['failed_attempts'] >= $allowed_attempts) {
     $remaining_time = $lockout_time - ($now - $_SESSION['last_attempt']);
     $lock_msg = "<div>Account locked out. Please try again in $remaining_time seconds.</div>";
   }
+
+if (isset($_POST['username']) && isset($_POST['password'])) {
+  
   //remaning time > 0, do nothing 
   if(isset($remaining_time) && $remaining_time>0){
 
   }
-  else{    //else authenticate user
+  else{    
+    //else reset login attempts
     if(isset($remaining_time) && $remaining_time<0){
       $_SESSION['failed_attempts'] = 0;
     }
+    
     $username = $_POST['username'];
     $password = $_POST['password'];
     $ip_address = $_SERVER['REMOTE_ADDR'];
@@ -68,7 +70,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
   
   
-  } 
+} 
 
 ?>
 

@@ -2,40 +2,68 @@
 session_start();
 require_once 'functions.php';
 require_once "workingconnection.php";
+$allowed_attempts = 5; //login allowed attempts
+$lockout_time = 180; // 3 minutes in seconds
+$now = time();
 
+
+// Check if the user has been locked out
+if (isset($_SESSION['reg_attempts']) && $_SESSION['reg_attempts'] >= $allowed_attempts) {
+    $remaining_time = $lockout_time - ($now - $_SESSION['last_reg_attempt']);
+    $lock_msg = "<div>Account locked out. Please try again in $remaining_time seconds.</div>";
+}
+
+  
 if(isset($_POST['register-member'])){
 
-    $username = $_POST["username"]; 
-    $password = $_POST["password"];
-    $cpassword = $_POST["cpassword"]; 
+    if(isset($remaining_time) && $remaining_time>0){
+        messagebox("You are locked out. Please try again in $remaining_time seconds");
+    }
+    else{  
 
-    $salt = generateSalt();
-    $usernameExists = "SELECT * FROM users WHERE username=?";
-    $stmt = $conn->prepare($usernameExists);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+        $username = $_POST["username"]; 
+        $password = $_POST["password"];
+        $cpassword = $_POST["cpassword"]; 
 
-    if ($result->num_rows > 0) {
-        echo "Username already exists<br>";
-    } else if (!validatePassword($password)) {
-        echo "Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.<br>";
-    } else if ($password != $cpassword) {
-        echo "Password does not match";
-    } else {
-        $hashSalt = hash("sha256", $salt);
-        $saltedHashedPassword = hash("sha256", $hashSalt . $password);
-        $role = 'user';
-        $sql = "INSERT INTO users (username, password, salt, role) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $username, $saltedHashedPassword, $hashSalt, $role);
-        $result = $stmt->execute();
+        $salt = generateSalt();
+        $usernameExists = "SELECT * FROM users WHERE username=?";
+        $stmt = $conn->prepare($usernameExists);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if($result){
-            echo "Registration successful!<br>";
-            header("Location: login.php");
+        if ($result->num_rows > 0) {
+            $_SESSION['reg_attempts'] = isset($_SESSION['reg_attempts']) ? $_SESSION['reg_attempts'] + 1 : 1;
+            $_SESSION['last_reg_attempt'] = $now;      
+            $fail_attempts= "Failed Attempts: ".$_SESSION['reg_attempts']."<br>";
+            logEvent($conn,$username,session_id(),$_SERVER['REMOTE_ADDR'],$_SERVER['HTTP_USER_AGENT'],'Register','fail');
+            messagebox( "Username already exists");
+
+        } else if (!validatePassword($password)) {
+            messagebox("Password must be at least 10 characters long and include at least 1 Upper Case, 1 Lower Case, 1 Special character and 1 number.");
+        
+        } else if ($password != $cpassword) {
+            messagebox("Password does not match");
+    
         } else {
-            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            // Reset the failed attempts and last attempt time for this user
+            unset($_SESSION['failed_attempts']);
+            unset($_SESSION['last_attempt']);
+            $hashSalt = hash("sha256", $salt);
+            $saltedHashedPassword = hash("sha256", $hashSalt . $password);
+            $role = 'user';
+            $sql = "INSERT INTO users (username, password, salt, role) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $username, $saltedHashedPassword, $hashSalt, $role);
+            $result = $stmt->execute();
+
+            if($result){
+                logEvent($conn,$username,session_id(),$_SERVER['REMOTE_ADDR'],$_SERVER['HTTP_USER_AGENT'],'Register','successfull');
+                echo "Registration successful!<br>";
+                header("Location: login.php");
+            } else {
+                mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+            }
         }
     }
 }
