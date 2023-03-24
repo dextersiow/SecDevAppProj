@@ -60,7 +60,7 @@ if(isset($_GET['submit'])){
                     messagebox('Unexpected error updating database. Please try again.');
                 }
                 else{
-                    logEvent($conn,$_SESSION['username'],session_id(),$ip_address,$user_agent,'Change Password','Successful');  
+                    logEvent($conn,$_SESSION['username'],session_id(),$_SESSION['ip_address'],$_SESSION['user_agent'],'Change Password','Successful');  
                     messagebox('Password changed successfully');
                     logout($conn,'Change Password');
                 }
