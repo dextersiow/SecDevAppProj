@@ -1,8 +1,8 @@
 <?php
 // Login to databse
 $host = 'localhost';
-$username = 'root';
-$password = '';
+$username = 'SADUSER';
+$password = 'SADUSER';
 $conn = new mysqli($host, $username, $password);
 
 if ($conn->connect_error) {
